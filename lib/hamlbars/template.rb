@@ -23,7 +23,7 @@ module Hamlbars
     def self.path_translator(path)
       p = path
       if @template_root
-        p.gsub("#{@template_root}/",'')
+        p = p.gsub("#{@template_root}/",'')
       end
       p.downcase.gsub(/[^a-z0-9\/]/, '_')
     end
