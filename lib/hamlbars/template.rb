@@ -21,7 +21,15 @@ module Hamlbars
     # Used to change the asset path into a string which is
     # safe to use as a JavaScript object property.
     def self.path_translator(path)
-      path.downcase.gsub(/[^a-z0-9\/]/, '_')
+      p = path
+      if @template_root
+        p.gsub("/#{@template_root}",'')
+      end
+      p.downcase.gsub(/[^a-z0-9\/]/, '_')
+    end
+
+    def self.template_root=(path)
+      @template_root = path.to_s
     end
 
     # Handy helper to preconfigure Hamlbars to render for
@@ -59,7 +67,7 @@ module Hamlbars
       @template_compiler = x
     end
 
-    # The JavaScript function used on the compile side to 
+    # The JavaScript function used on the compile side to
     # register the template as a partial on the client side.
     def self.template_partial_method
       @template_partial_method ||= 'Handlebars.registerPartial'
@@ -84,7 +92,7 @@ module Hamlbars
       @engine = ::Haml::Engine.new(data, options)
     end
 
-    # Uses Haml to render the template into an HTML string, then 
+    # Uses Haml to render the template into an HTML string, then
     # wraps it in the neccessary JavaScript to serve to the client.
     def evaluate(scope, locals, &block)
       template = if @engine.respond_to?(:precompiled_method_return_value, true)
@@ -163,8 +171,8 @@ module Haml
     module HamlbarsExtensions
       # Used to create handlebars expressions within HAML,
       # if you pass a block then it will create a Handlebars
-      # block helper (ie "{{#expression}}..{{/expression}}" 
-      # otherwise it will create an expression 
+      # block helper (ie "{{#expression}}..{{/expression}}"
+      # otherwise it will create an expression
       # (ie "{{expression}}").
       def handlebars(expression, options={}, &block)
         express(['{{','}}'],expression,options,&block)
@@ -204,4 +212,3 @@ module Haml
     include HamlbarsExtensions
   end
 end
-
